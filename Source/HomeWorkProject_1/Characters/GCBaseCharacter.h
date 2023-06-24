@@ -21,10 +21,27 @@ public:
 
 	virtual void ChangeCrouchState();
 
+	virtual void StartSprint();
+	virtual void StopSprint();
+
+	virtual void Tick(float DeltaTime) override;
+
+	FORCEINLINE bool GetIsSprinting() {return bIsSprinting;}
+
 protected:
 	UPROPERTY(EditAnywhere,BlueprintReadWrite, Category="Character | Controls")
 	float BaseTurnRate = 45.0f;
 
 	UPROPERTY(EditAnywhere,BlueprintReadWrite, Category="Character | Controls")
 	float BaseLookUpRate = 45.0f;
+
+	UPROPERTY(EditAnywhere,BlueprintReadWrite, Category="Character | Movement")
+	float SprintSpeed = 800.0f;
+
+	virtual bool CanSprint();
+	
+private:
+	float DefaultMaxMovementSpeed = 0.0f;
+	bool bIsSprintRequested = false;
+	bool bIsSprinting = false;
 };
