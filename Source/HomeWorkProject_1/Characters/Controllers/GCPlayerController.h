@@ -31,6 +31,9 @@ private:
 	void ChangeCrouchState();
 	void Jump();
 
+	void StartSprint();
+	void StopSprint();
+
 
 	TSoftObjectPtr<class AGCBaseCharacter> CachedBaseCharacter;
 };
