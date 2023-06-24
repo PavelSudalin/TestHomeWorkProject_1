@@ -4,7 +4,14 @@
 #include "GCBaseCharacter.h"
 
 #include "GameFramework/CharacterMovementComponent.h"
+#include "HomeWorkProject_1/Components/MovementComponents/GCBaseCharacterMovementComponent.h"
 
+
+AGCBaseCharacter::AGCBaseCharacter(const FObjectInitializer& ObjectInitializer)
+	:Super(ObjectInitializer.SetDefaultSubobjectClass<UGCBaseCharacterMovementComponent>(ACharacter::CharacterMovementComponentName))
+{
+	GCBaseCharacterMovementComponent = StaticCast<UGCBaseCharacterMovementComponent*>(GetCharacterMovement());
+}
 
 void AGCBaseCharacter::ChangeCrouchState()
 {
@@ -35,23 +42,35 @@ void AGCBaseCharacter::StopSprint()
 void AGCBaseCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	if (bIsSprintRequested && !bIsSprinting && CanSprint())
-	{
-		bIsSprinting = true;
-		DefaultMaxMovementSpeed = GetCharacterMovement()->MaxWalkSpeed;
-		GetCharacterMovement()->MaxWalkSpeed = SprintSpeed;
-		GetCharacterMovement()->bForceMaxAccel = 1;
-	}
+	TryChangeSprintState();
+}
 
-	if (!bIsSprintRequested && bIsSprinting)
-	{
-		bIsSprinting = false;
-		GetCharacterMovement()->MaxWalkSpeed = DefaultMaxMovementSpeed;
-		GetCharacterMovement()->bForceMaxAccel = 0;
-	}
+void AGCBaseCharacter::OnSprintStart_Implementation()
+{
+	UE_LOG(LogTemp, Log, TEXT("AGCBaseCharacter::OnSprintStart_Implementation"))
+}
+
+void AGCBaseCharacter::OnSprintEnd_Implementation()
+{
+	UE_LOG(LogTemp, Warning, TEXT("AGCBaseCharacter::OnSprintEnd_Implementation"))
 }
 
 bool AGCBaseCharacter::CanSprint()
 {
 	return true;
+}
+
+void AGCBaseCharacter::TryChangeSprintState()
+{
+	if (bIsSprintRequested && !GCBaseCharacterMovementComponent->IsSprinting() && CanSprint())
+	{
+		GCBaseCharacterMovementComponent->StartSprint();
+		OnSprintStart();
+	}
+
+	if (!bIsSprintRequested && GCBaseCharacterMovementComponent->IsSprinting())
+	{
+		GCBaseCharacterMovementComponent->StopSprint();
+		OnSprintEnd();
+	}
 }
